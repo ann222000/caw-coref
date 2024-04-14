@@ -16,7 +16,8 @@ DATA_SPLITS = ["development", "test", "train"]
 DEPS_FILENAME = "deps.conllu"
 DEPS_IDX_FILENAME = "deps.index"
 DEP_SENT_PATTERN = re.compile(r"(?:^\d.+$\n?)+", flags=re.M)
-SENT_PATTERN = re.compile(r"(?:^(?:\w+\/){3}.+$\n?)+", flags=re.M)
+SENT_PATTERN = re.compile(r"(?:^(?:[\w.]+\/){3}.+$\n?)+", flags=re.M)
+# I fixed regular expression [\w.] instead of \w (because of file name)
 
 
 class CorefSpansHolder:
@@ -257,8 +258,9 @@ def get_conll_filenames(data_dir: str, language: str) -> Dict[str, List[str]]:
         data_split_dir = os.path.join(data_dir, data_split, "data", language)
         conll_filenames[data_split] = [
             filename for filename in get_filenames(data_split_dir)
-            if filename.endswith("gold_conll")
+            if filename.endswith("gold_skel")
             ]
+        #I changed gold_conll to gold_skel
     return conll_filenames
 
 
@@ -386,7 +388,7 @@ if __name__ == "__main__":
         shutil.rmtree(args.tmp_dir)
 
     os.makedirs(args.tmp_dir)
-    data_dir = os.path.join(args.conll_dir, "v4", "data")
+    data_dir = os.path.join(args.conll_dir, "data")
     conll_filenames = get_conll_filenames(data_dir, "english")
     extract_trees_to_files(args.tmp_dir, conll_filenames)
     convert_con_to_dep(args.tmp_dir, conll_filenames)
